@@ -1,16 +1,16 @@
-class PostsController <ApplicationController
+class PostsController < ApplicationController
   before_action :set_post, only: [:edit, :update, :destroy]
 
   def create
     @post = current_user.posts.new(post_params)
     if @post.save
+      @post.create_activity key: 'post.created', owner: @post.user
       respond_to do |format|
-        format.html {redirect_to user_path(@post.user.username), notic: "Post Created"}
+        format.html {redirect_to user_path(@post.user.username), notice: "Post Created"}
       end
     else
-      redirect_to user_path(@post.user.username), notic: "Something went wrong"
+      redirect_to user_path(@post.user.username), notice: "Something went wrong"
     end
-
   end
 
   def edit
@@ -22,18 +22,16 @@ class PostsController <ApplicationController
         format.html {redirect_to user_path(@post.user.username), notice: "Post Updated"}
       end
     else
-      redirect_to post_path(@post), notic: "Something went wrong"
+      redirect_to post_path(@post), notice: "Something went wrong"
     end
-
   end
 
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html {redirect_to user_path(@post.user.username), notic: "Post Destroyed"}
+      format.html {redirect_to user_path(@post.user.username), notice: "Post Destroyed"}
     end
   end
-
 
   private
 
@@ -43,7 +41,6 @@ class PostsController <ApplicationController
 
   def post_params
     params.require(:post).permit(:content)
-
   end
 
 end
